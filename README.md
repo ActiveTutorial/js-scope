@@ -5,10 +5,9 @@ A powerful JavaScript library for creating, inspecting, and manipulating real or
 ## Features
 
 - Dynamically reflect and access local scopes
+- Edit locally scoped variables through scope object
 - Attach scopes to functions and retrieve them later
-- Isolate code execution using scope-eval
 - Extract variable identifiers from functions or code
-- Support for both real and artificial scopes
 
 ## Installation
 
@@ -51,7 +50,7 @@ run();
 
 * `input`:
 
-  * A `Function` (real scope)
+  * A `Function` made using `eval(Scope.initScopeEval())` (real scope)
   * An `Object` (artificial scope)
   * Nothing (empty scope)
 * `source`: (optional)
