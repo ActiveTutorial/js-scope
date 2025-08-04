@@ -1,137 +1,101 @@
 # js-scope
 
-A powerful JavaScript library for creating, inspecting, and manipulating isolated runtime scopes.
+A powerful JavaScript library for creating, inspecting, and manipulating real or artificial scopes at runtime.
 
 ## Features
 
-- Dynamically create isolated scopes with their own variables.
-- Inject and extract variables safely.
-- Mark functions with their original scope.
-- Evaluate code with full scope control.
-- Automatically detect variable identifiers from code.
+- Dynamically reflect and access local scopes
+- Attach scopes to functions and retrieve them later
+- Isolate code execution using scope-eval
+- Extract variable identifiers from functions or code
+- Support for both real and artificial scopes
 
 ## Installation
 
+Install directly from GitHub:
+
 ```bash
-npm install js-scope
+npm install ActiveTutorial/js-scope
 ````
 
-## Usage
+## Usage Example (Real Scope)
 
 ```js
 import Scope from 'js-scope';
 
-// Create a new scope with predefined variables
-const scope = new Scope({ x: 10, y: 20 });
-console.log(scope.get('x')); // 10
+// Create a scope from a real runtime context
+function run() {
+  let foo = 123;
+  const bar = 'hello';
+  var baz = true;
 
-// Set a variable
-scope.set('z', 30);
-console.log(scope.get('z')); // 30
+  const scope = new Scope(eval(Scope.initScopeEval()));
 
-// Check if a variable exists in the scope
-console.log(scope.has('y')); // true
+  console.log(scope.get('foo')); // 123
+  console.log(scope.has('bar')); // true
 
-// Dynamically add a variable reference
-scope.add('a');
-scope.set('a', 100);
-console.log(scope.get('a')); // 100
+  scope.set('baz', false);
+  console.log(baz); // false
+  scope.variables.baz = "hi";
+  console.log(baz) // "hi"
+}
 
-// Get identifiers from a function
-const ids = Scope.getIdentifiers(function() {
-  let foo = bar + baz;
-});
-console.log(ids); // ['foo', 'bar', 'baz']
+run();
 ```
 
 ## API
 
-### `new Scope(input[, source])`
+### Constructor
 
-Create a scope.
+#### `new Scope(input[, source])`
 
-* `input`: `Object | Function | undefined`
-* `source`: `Array<string> | Function` (only used if input is a function)
+* `input`:
 
----
+  * A `Function` (real scope)
+  * An `Object` (artificial scope)
+  * Nothing (empty scope)
+* `source`: (optional)
 
-### `scope.get(name: string) => any`
-
-Get the value of a scoped variable.
-
----
-
-### `scope.set(name: string, value: any) => void`
-
-Set a scoped variable's value.
+  * Array of variable names
+  * Function (variables will be extracted from it)
 
 ---
 
-### `scope.has(name: string) => boolean`
+### Instance Methods
 
-Returns whether a variable exists in the scope proxy.
-
----
-
-### `scope.existsInScope(name: string) => boolean`
-
-Returns whether the variable actually exists in the underlying scope (not just the proxy).
+* `scope.get(name)`
+* `scope.set(name, value)`
+* `scope.has(name)`
+* `scope.existsInScope(name)`
+* `scope.add(name | names[])`
 
 ---
 
-### `scope.add(name: string | Array<string>) => boolean`
+### Static Methods
 
-Dynamically add one or more variable names to the proxy from the actual scope.
+* `Scope.getIdentifiers(code)`
+  → Extract identifiers from string or function
 
----
+* `Scope.markFunctionScope(scopeEval, fn)`
+  → Attach a scope-eval to a function
 
-### `Scope.getIdentifiers(code: Function | string) => Array<string>`
+* `Scope.getFunctionScope(fn)`
+  → Retrieve the scope from a previously marked function
 
-Extract identifiers from a function or code string.
+* `Scope.isScopeEval(fn)`
+  → Check if function is a raw scope-eval
 
----
+* `Scope.generateScopeEval(obj)`
+  → Create a new isolated scope from an object
 
-### `Scope.markFunctionScope(scopeEval, fn) => true`
+* `Scope.isValidVariableName(name)`
+  → Check if name is valid JS identifier
 
-Associate a `scopeEval` function with `fn`.
+* `Scope.init()`
+  → Returns string to init a full `Scope` object
 
----
-
-### `Scope.getFunctionScope(fn) => Scope | false`
-
-Retrieve the original scope of a function previously marked.
-
----
-
-### `Scope.isScopeEval(fn) => boolean`
-
-Check if a function is a `scopeEval`.
-
----
-
-### `Scope.generateScopeEval(obj) => Function`
-
-Generates a new `scopeEval` based on the provided object of values.
-
----
-
-### `Scope.isValidVariableName(name: string) => boolean`
-
-Returns `true` if the name is a valid JavaScript variable name.
-
----
-
-### `Scope.init() => string`
-
-Returns a `new Scope(...)` call as a string.
-
----
-
-### `Scope.initScopeEval() => string`
-
-Returns the raw scope-eval function string.
-
----
+* `Scope.initScopeEval()`
+  → Returns the string form of a basic scope-eval
 
 ## Development
 
@@ -140,7 +104,7 @@ npm install
 npm test
 ```
 
-Test files are located in the `test/` directory and are written using Mocha and Chai.
+Tests use Mocha + Chai, found in the `/test` folder.
 
 ## License
 
